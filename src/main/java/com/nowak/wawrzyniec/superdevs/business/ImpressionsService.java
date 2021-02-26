@@ -27,7 +27,7 @@ public class ImpressionsService {
 
         return provider.raw() //
                 .groupBy(col("Daily")) //
-                .agg(sum(col("Impressions"))) //
+                .agg(sum(col("Impressions")).cast("Long")) //
                 .collectAsList();
     }
 }

@@ -32,7 +32,7 @@ public class ClicksService {
                 .select(col("Clicks")) //
                 .agg(sum("Clicks").cast("Long")) //
                 .first() //
-                .getLong(0));
+                .get(0));
     }
 
     private LocalDate format(String date) {

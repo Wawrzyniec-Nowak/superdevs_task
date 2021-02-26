@@ -28,7 +28,7 @@ public class ClickThroughRateService {
         return provider.raw() //
                 .groupBy(col("Datasource"), col("Campaign")) //
                 .agg(sum(col("Impressions")).alias("sum_of_impressions"), sum(col("Clicks")).alias("sum_of_clicks")) //
-                .withColumn("ctr", col("sum_of_clicks").divide(col("sum_of_impressions"))) //
+                .withColumn("ctr", col("sum_of_clicks").divide(col("sum_of_impressions")).cast("Double")) //
                 .drop("sum_of_impressions", "sum_of_clicks")
                 .collectAsList();
     }

@@ -22,7 +22,7 @@ class ImpressionsAPI {
     List<ImpressionsResponse> getImpressionsDaily() {
         return service.calculateImpressionsOverTime() //
                 .stream() //
-                .map(row -> new ImpressionsResponse(row.getString(0), row.getDouble(1)))//
+                .map(row -> new ImpressionsResponse(row.getString(0), row.getLong(1)))//
                 .collect(Collectors.toList());
     }
 
