@@ -3,33 +3,39 @@ package com.nowak.wawrzyniec.superdevs;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ApplicationConfiguration {
 
-    @Bean
-    public SparkConf sparkConf() {
-        SparkConf sparkConf = new SparkConf()
-                .setAppName(appName)
-                .setSparkHome(sparkHome)
-                .setMaster(masterUri);
+    @Value("${application.name:superdevs task}")
+    private String appName;
 
-        return sparkConf;
-    }
+    @Value("${spark.home.directory}")
+    private String sparkHome;
 
-    @Bean
-    public JavaSparkContext javaSparkContext() {
-        return new JavaSparkContext(sparkConf());
-    }
+    @Value("${master.uri:local}")
+    private String masterUri;
 
     @Bean
     public SparkSession sparkSession() {
         return SparkSession
                 .builder()
                 .sparkContext(javaSparkContext().sc())
-                .appName("Java Spark SQL basic example")
+                .appName(appName)
                 .getOrCreate();
+    }
+
+    private SparkConf sparkConf() {
+        return new SparkConf()
+                .setAppName(appName)
+                .setSparkHome(sparkHome)
+                .setMaster(masterUri);
+    }
+
+    private JavaSparkContext javaSparkContext() {
+        return new JavaSparkContext(sparkConf());
     }
 }
