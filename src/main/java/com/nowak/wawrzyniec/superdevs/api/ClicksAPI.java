@@ -19,7 +19,7 @@ class ClicksAPI {
 
     @GetMapping("/clicks/{datasource}")
     long getClicksForDatasource(@PathVariable String datasource, @RequestParam String since, @RequestParam String till) {
-        return Double.valueOf(service.calculateClicksPerDatasource(datasource, since, till)).longValue();
+        return (long) service.calculateClicksPerDatasource(datasource, since, till).orElse(0L);
     }
 
 }

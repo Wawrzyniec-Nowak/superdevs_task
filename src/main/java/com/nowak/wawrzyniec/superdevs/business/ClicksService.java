@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.apache.spark.sql.functions.*;
@@ -21,17 +22,17 @@ public class ClicksService {
         this.provider = provider;
     }
 
-    public double calculateClicksPerDatasource(String datasource, String since, String till) {
+    public Optional<Object> calculateClicksPerDatasource(String datasource, String since, String till) {
         LOGGER.info("Calculating clicks per datasource " + datasource + " for date period (" + since + ", " + till + ")");
 
-        return provider.raw() //
+        return Optional.ofNullable(provider.raw() //
                 .filter(col("Datasource").equalTo(datasource)) //
                 .filter(to_date(col("Daily"), "MM/dd/yy").gt(format(since))) //
                 .filter(to_date(col("Daily"), "MM/dd/yy").lt(format(till))) //
                 .select(col("Clicks")) //
-                .agg(sum("Clicks")) //
+                .agg(sum("Clicks").cast("Long")) //
                 .first() //
-                .getDouble(0);
+                .getLong(0));
     }
 
     private LocalDate format(String date) {
