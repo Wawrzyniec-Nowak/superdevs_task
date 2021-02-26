@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.sum;
 
 @Service
 public class ClickThroughRateService {
+
+    private static final Logger LOGGER = Logger.getLogger(ClickThroughRateService.class.getName());
 
     private final DataStoreProvider provider;
 
@@ -20,6 +23,8 @@ public class ClickThroughRateService {
     }
 
     public List<Row> calculateCTRPerDatasourceAndCampaign() {
+        LOGGER.info("Calculating CTR");
+
         return provider.raw() //
                 .groupBy(col("Datasource"), col("Campaign")) //
                 .agg(sum(col("Impressions")).alias("sum_of_impressions"), sum(col("Clicks")).alias("sum_of_clicks")) //
