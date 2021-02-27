@@ -1,7 +1,12 @@
 package com.nowak.wawrzyniec.superdevs.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class CtrResponse {
 
     @ApiModelProperty(notes = "Datasource from the data store")
@@ -13,10 +18,21 @@ class CtrResponse {
     @ApiModelProperty(notes = "Calculated CTR")
     private final double ctr;
 
+    @ApiModelProperty(notes = "Daily from the data store")
+    private final LocalDate daily;
+
     CtrResponse(String datasource, String campaign, double ctr) {
         this.datasource = datasource;
         this.campaign = campaign;
         this.ctr = ctr;
+        this.daily = null;
+    }
+
+    public CtrResponse(String datasource, double ctr, String daily) {
+        this.datasource = datasource;
+        this.campaign = null;
+        this.ctr = ctr;
+        this.daily = LocalDate.parse(daily, DateTimeFormatter.ofPattern("MM/dd/yy"));
     }
 
     public String getDatasource() {
@@ -29,5 +45,9 @@ class CtrResponse {
 
     public double getCtr() {
         return ctr;
+    }
+
+    public LocalDate getDaily() {
+        return daily;
     }
 }

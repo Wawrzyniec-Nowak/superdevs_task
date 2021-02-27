@@ -32,6 +32,14 @@ class ImpressionsServiceTest extends SparkIntegrationBaseTest {
         assertThat(impressions).containsExactlyInAnyOrder(67877L, 3988L, 18813L);
     }
 
+    @Test
+    public void shouldNotFailOnEmptyDataStore() {
+        when(provider.raw()).thenReturn(spark().createDataFrame(Lists.newArrayList(), Raw.class));
+        List<Row> rows = service.calculateImpressionsOverTime();
+
+        assertEquals(0, rows.size());
+    }
+
     private Dataset<Row> prepareDataset() {
         ArrayList<Raw> rows = Lists.newArrayList( //
                 new Raw("Google Ads", "Adventmarkt Touristik", "11/12/19", 7, 22425), //

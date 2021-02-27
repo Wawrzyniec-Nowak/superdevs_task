@@ -23,13 +23,27 @@ public class ClickThroughRateService {
     }
 
     public List<Row> calculateCTRPerDatasourceAndCampaign() {
-        LOGGER.info("Calculating CTR");
+        LOGGER.info("Calculating CTR per datasource and campaign");
 
         return provider.raw() //
                 .groupBy(col("Datasource"), col("Campaign")) //
                 .agg(sum(col("Impressions")).alias("sum_of_impressions"), sum(col("Clicks")).alias("sum_of_clicks")) //
                 .withColumn("ctr", col("sum_of_clicks").divide(col("sum_of_impressions")).cast("Double")) //
                 .drop("sum_of_impressions", "sum_of_clicks")
+                .select(col("Datasource"), col("Campaign"), col("ctr"))
+                .collectAsList();
+    }
+
+    public List<Row> calculateCTRPerDaily(String datasource) {
+        LOGGER.info("Calculating CTR per daily for " + datasource);
+
+        return provider.raw() //
+                .filter(col("Datasource").equalTo(datasource))
+                .groupBy(col("Daily"), col("Datasource")) //
+                .agg(sum(col("Impressions")).alias("sum_of_impressions"), sum(col("Clicks")).alias("sum_of_clicks")) //
+                .withColumn("ctr", col("sum_of_clicks").divide(col("sum_of_impressions")).cast("Double")) //
+                .drop("sum_of_impressions", "sum_of_clicks")
+                .select(col("Datasource"), col("ctr"), col("Daily"))
                 .collectAsList();
     }
 }

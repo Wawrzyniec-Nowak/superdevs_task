@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Api(value = "clicks API", description = "Provides operations executed on clicks")
 @RestController
@@ -40,6 +42,19 @@ class ClicksAPI {
         String startDate = Optional.ofNullable(since).filter(StringUtils::isNotBlank).orElse("1900-01-01");
         String endDate = Optional.ofNullable(till).filter(StringUtils::isNotBlank).orElse(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         return (long) service.calculateClicksPerDatasource(datasource, startDate, endDate).orElse(0L);
+    }
+
+    @ApiOperation(value = "Get datastores and campaign names with clicks above threshold", response = Iterable.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully collected datastores and campaigns above threshold"),
+            @ApiResponse(code = 400, message = "Missing threshold parameter")
+    })
+    @GetMapping("/clicks")
+    List<ClicksResponse> getDatastoresAndCampaignsAboveThreshold(@RequestParam int threshold) {
+        return service.collectDatastoresAndCampaignsAboveThreshold(threshold) //
+                .stream()
+                .map(row -> new ClicksResponse(row.getString(0), row.getString(1), row.getLong(2))) //
+                .collect(Collectors.toList());
     }
 
     private boolean areValid(String datasource, String since, String till) {

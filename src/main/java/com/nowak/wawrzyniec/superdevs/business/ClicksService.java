@@ -1,10 +1,12 @@
 package com.nowak.wawrzyniec.superdevs.business;
 
+import org.apache.spark.sql.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -37,5 +39,16 @@ public class ClicksService {
 
     private LocalDate format(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    public List<Row> collectDatastoresAndCampaignsAboveThreshold(int threshold) {
+        LOGGER.info("Collecting datastores and campaigns with clicks above " + threshold);
+
+        return provider.raw() //
+                .filter(col("Clicks").gt(threshold)) //
+                .orderBy(col("Clicks"))
+                .select(col("Datasource"), col("Campaign"), col("Clicks").cast("Long")) //
+                .collectAsList();
+
     }
 }
