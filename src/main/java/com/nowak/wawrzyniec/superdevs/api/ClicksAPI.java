@@ -29,7 +29,7 @@ class ClicksAPI {
         this.service = service;
     }
 
-    @ApiOperation(value = "Get clicks per datasource in between date period", response = Iterable.class)
+    @ApiOperation(value = "Get clicks per datasource in between date period", response = Long.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully counted clicks per datasource"),
             @ApiResponse(code = 400, message = "Cannot validate proviced parameters correctly. Date format should be yyyy-MM-dd and datasource cannot be empty")
